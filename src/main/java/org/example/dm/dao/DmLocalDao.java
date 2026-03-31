@@ -136,9 +136,9 @@ public class DmLocalDao {
                      "total_quantity, total_tax_amount, " +
                      "department, creator, auditor, approver, " +
                      "submit_time, modify_time, order_status, " +
-                     "sync_status, sync_operation, created_time, updated_time" +
+                     "sync_status, created_time, updated_time" +
                      ") VALUES (" +
-                     "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, GETDATE(), GETDATE()" +
+                     "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, GETDATE(), GETDATE()" +
                      ")";
         
         try (Connection conn = DatabaseConnectionPool.getConnection();
@@ -174,7 +174,6 @@ public class DmLocalDao {
             pstmt.setTimestamp(idx++, Timestamp.valueOf(order.getModifyTime()));
             pstmt.setInt(idx++, order.getOrderStatus());
             pstmt.setInt(idx++, 0); // sync_status = 0 (待同步)
-            pstmt.setString(idx++, "C"); // sync_operation = 'C' (创建)
             
             int rowsAffected = pstmt.executeUpdate();
             
@@ -206,7 +205,7 @@ public class DmLocalDao {
                      "total_quantity = ?, total_tax_amount = ?, " +
                      "department = ?, creator = ?, auditor = ?, approver = ?, " +
                      "submit_time = ?, modify_time = ?, order_status = ?, " +
-                     "sync_status = 0, sync_operation = 'U', updated_time = GETDATE() " +
+                     "sync_status = 0, updated_time = GETDATE() " +
                      "WHERE id = ?";
         
         try (Connection conn = DatabaseConnectionPool.getConnection();
@@ -382,7 +381,6 @@ public class DmLocalDao {
                 order.setModifyTime(rs.getTimestamp("modify_time").toLocalDateTime());
                 order.setOrderStatus(rs.getInt("order_status"));
                 order.setSyncStatus(rs.getInt("sync_status"));
-                order.setSyncOperation(rs.getString("sync_operation"));
                 order.setSyncAttempts(rs.getInt("sync_attempts"));
                 order.setSyncError(rs.getString("sync_error"));
                 

@@ -33,9 +33,6 @@ public class DmOrder {
     private LocalDateTime modifyTime;
     private Integer orderStatus;
     private Integer syncStatus;
-    private String syncOperation;
-    private String jdyDataId;
-    private LocalDateTime lastSyncTime;
     private Integer syncAttempts;
     private String syncError;
     private LocalDateTime createdTime;
@@ -236,31 +233,7 @@ public class DmOrder {
     public void setSyncStatus(Integer syncStatus) {
         this.syncStatus = syncStatus;
     }
-    
-    public String getSyncOperation() {
-        return syncOperation;
-    }
-    
-    public void setSyncOperation(String syncOperation) {
-        this.syncOperation = syncOperation;
-    }
-    
-    public String getJdyDataId() {
-        return jdyDataId;
-    }
-    
-    public void setJdyDataId(String jdyDataId) {
-        this.jdyDataId = jdyDataId;
-    }
-    
-    public LocalDateTime getLastSyncTime() {
-        return lastSyncTime;
-    }
-    
-    public void setLastSyncTime(LocalDateTime lastSyncTime) {
-        this.lastSyncTime = lastSyncTime;
-    }
-    
+
     public Integer getSyncAttempts() {
         return syncAttempts;
     }

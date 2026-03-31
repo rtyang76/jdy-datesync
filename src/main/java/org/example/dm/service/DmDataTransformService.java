@@ -1,7 +1,7 @@
 package org.example.dm.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.example.dm.config.DmConfigManager;
+import org.example.config.ConfigManager;
 import org.example.dm.dao.DmLocalDao;
 import org.example.dm.model.DmOrder;
 import org.example.dm.model.DmOrderDetail;
@@ -42,8 +42,8 @@ public class DmDataTransformService {
      */
     private void loadFieldMapping() {
         try {
-            DmConfigManager configManager = DmConfigManager.getInstance();
-            String mappingFile = configManager.getProperty("dm.jdy.fieldMapping", "dm_to_jdy_field_mapping.json");
+            ConfigManager configManager = ConfigManager.getInstance();
+            String mappingFile = configManager.getProperty("dm.to.jdy.field.mapping.path", "dm_to_jdy_field_mapping.json");
             
             InputStream input = getClass().getClassLoader().getResourceAsStream(mappingFile);
             if (input == null) {

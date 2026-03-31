@@ -6,7 +6,6 @@ import org.example.service.DeliveryNoticeSyncService;
 import org.example.service.impl.OrderSyncServiceImpl;
 import org.example.service.impl.ItemSyncServiceImpl;
 import org.example.service.impl.DeliveryNoticeSyncServiceImpl;
-import org.example.dm.service.DmDataPullService;
 import org.example.dm.service.DmJdySyncService;
 import org.example.util.LogUtil;
 
@@ -53,13 +52,6 @@ public class SyncApplication {
                 String syncType = args[0].toLowerCase();
                 System.out.println("执行同步类型: " + syncType);
                 switch (syncType) {
-                    case "dm":
-                        // 只执行DM数据拉取
-                        System.out.println("开始执行DM数据拉取...");
-                        DmDataPullService dmService = DmDataPullService.getInstance();
-                        dmService.pullDataFromRemote();
-                        System.out.println("DM数据拉取完成");
-                        return;
                     case "dmpush":
                         // 只执行DM数据推送简道云
                         System.out.println("开始执行DM数据推送简道云...");
@@ -88,7 +80,7 @@ public class SyncApplication {
                         return;
                     default:
                         System.out.println("未知的同步类型: " + syncType);
-                        System.out.println("支持的类型: dm, dmpush, delivery, order, item");
+                        System.out.println("支持的类型: dmpush, delivery, order, item");
                         return;
                 }
             }
@@ -160,14 +152,12 @@ public class SyncApplication {
      * 同步任务类
      */
     private static class SyncTask implements Runnable {
-        private final DmDataPullService dmDataPullService;
         private final DmJdySyncService dmJdySyncService;
         private final OrderSyncService orderSyncService;
         private final ItemSyncService itemSyncService;
         private final DeliveryNoticeSyncService deliveryNoticeSyncService;
 
         public SyncTask() {
-            this.dmDataPullService = DmDataPullService.getInstance();
             this.dmJdySyncService = DmJdySyncService.getInstance();
             this.orderSyncService = OrderSyncServiceImpl.getInstance();
             this.itemSyncService = ItemSyncServiceImpl.getInstance();
@@ -179,14 +169,12 @@ public class SyncApplication {
             try {
                 String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
                 LogUtil.logInfo("=== 定时同步任务开始 " + timestamp + " ===");
-                
-                // 阶段1: 拉取客户DM数据（虚拟机 → 本地数据库）
-                dmDataPullService.pullDataFromRemote();
 
-                // 阶段2: 推送DM数据到简道云（本地数据库 → 简道云）
+                // 阶段1: 推送DM数据到简道云（本地数据库 → 简道云）
+                // 注：DM数据现在通过EDI推送服务接收，不再需要远程拉取
                 dmJdySyncService.pushDataToJiandaoyun();
 
-                // 阶段3: 同步客户A数据（本地数据库 → 简道云）
+                // 阶段2: 同步MSD数据（本地数据库 → 简道云）
                 // 执行订单同步
                 orderSyncService.syncProcess();
 
@@ -195,7 +183,7 @@ public class SyncApplication {
 
                 // 执行采购物料通知单同步
                 deliveryNoticeSyncService.syncProcess();
-                
+
                 LogUtil.logInfo("=== 定时同步任务完成 " + timestamp + " ===");
 
             } catch (Exception e) {
