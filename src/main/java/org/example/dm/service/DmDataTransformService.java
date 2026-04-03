@@ -170,8 +170,9 @@ public class DmDataTransformService {
         
         for (DmOrderDetail detail : details) {
             Map<String, Object> detailMap = new HashMap<>();
-            
+
             putSubField(detailMap, "line_no", detail.getLineNo() != null ? String.valueOf(detail.getLineNo()) : "");
+            putSubField(detailMap, "order_no", detail.getOrderNo());
             putSubField(detailMap, "material_code", detail.getMaterialCode());
             putSubField(detailMap, "material_desc", detail.getMaterialDesc());
             putSubField(detailMap, "quantity", detail.getQuantity() != null ? detail.getQuantity().toString() : "");

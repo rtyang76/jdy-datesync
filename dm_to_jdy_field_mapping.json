@@ -22,11 +22,19 @@
     "submit_time": "_widget_1770079954347",
     "modify_time": "_widget_1770079954348",
     "order_status": "_widget_1770079954349",
-    "order_details": "_widget_1770078767303"
+    "order_details": "_widget_1770078767303",
+    "i_ord": "_widget_1775107266914",
+    "fill_date": "_widget_1775107266915",
+    "price_book": "_widget_1775107266916",
+    "responsible_department": "_widget_1775107266917",
+    "current_payment_date": "_widget_1775107266918",
+    "original_payment_date": "_widget_1775107266919",
+    "document_type": "_widget_1775107266920"
   },
   "sub_tables": {
     "order_details": {
       "line_no": "_widget_1770078767305",
+      "order_no": "_widget_1770078767306",
       "material_code": "_widget_1770078767307",
       "material_desc": "_widget_1770078767308",
       "quantity": "_widget_1770078767309",
@@ -35,7 +43,11 @@
       "tax_amount": "_widget_1770078767312",
       "price_book": "_widget_1770078767313",
       "suggested_quantity": "_widget_1770078767314",
-      "source_doc_no": "_widget_1770078767316"
+      "source_doc_no": "_widget_1770078767316",
+      "i_ord": "_widget_1775107266922",
+      "same_auxiliary": "_widget_1775107266923",
+      "update_mark": "_widget_1775107266924",
+      "expand_mark": "_widget_1775107266925"
     }
   }
 }

@@ -128,7 +128,8 @@ public class DmDataPullService {
     private boolean processOrder(DmOrder remoteOrder) {
         try {
             // 1. 查询远程子表数据
-            List<DmOrderDetail> remoteDetails = remoteDao.fetchOrderDetails(remoteOrder.getSourceId());
+            // 主子表关联：子表order_no格式为"主表order_no-序号"，通过LIKE匹配关联
+            List<DmOrderDetail> remoteDetails = remoteDao.fetchOrderDetails(remoteOrder.getOrderNo());
             remoteOrder.setDetails(remoteDetails);
             
             // 2. 检查本地是否存在（优先通过source_id，其次通过order_no）

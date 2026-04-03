@@ -516,7 +516,11 @@ public class DmLocalDao {
                 detail.setPriceBook(rs.getString("price_book"));
                 detail.setSuggestedQuantity(rs.getBigDecimal("suggested_quantity"));
                 detail.setSourceDocNo(rs.getString("source_doc_no"));
-                detail.setModifyTime(rs.getTimestamp("modify_time").toLocalDateTime());
+                
+                Timestamp modifyTime = rs.getTimestamp("modify_time");
+                if (modifyTime != null) {
+                    detail.setModifyTime(modifyTime.toLocalDateTime());
+                }
                 
                 Integer sourceId = rs.getInt("source_id");
                 if (!rs.wasNull()) {

@@ -73,25 +73,27 @@ public class DmRemoteDao {
     
     /**
      * 查询订单的子表数据
-     * @param sourceId 源系统ID
+     * 主子表关联逻辑：子表order_no格式为"主表order_no-序号"（如MO2401001-01）
+     * 通过LIKE字符串匹配关联主表：d.order_no LIKE m.order_no + '-%'
+     * @param orderNo 主表订单号
      * @return 订单明细列表
      */
-    public List<DmOrderDetail> fetchOrderDetails(Integer sourceId) {
+    public List<DmOrderDetail> fetchOrderDetails(String orderNo) {
         List<DmOrderDetail> details = new ArrayList<>();
         String detailTableName = configManager.getDetailTableName();
         String mainTableName = configManager.getMainTableName();
-        String sourceIdField = configManager.getSourceFieldName("source_id");
+        String orderNoField = configManager.getSourceFieldName("order_no");
         
-        // 注意：虚拟机上的子表通过 order_id 关联，但这里的 order_id 实际是主表的 id
-        // 我们需要先查询主表获取 id，或者直接通过 order_no 关联
+        // 主子表关联：子表order_no格式为"主表order_no-序号"（如MO2401001-01）
+        // 通过LIKE字符串匹配关联主表：d.order_no LIKE m.order_no + '-%'
         String sql = "SELECT d.* FROM " + detailTableName + " d " +
-                     "INNER JOIN " + mainTableName + " o ON d.order_id = o." + sourceIdField + " " +
-                     "WHERE o." + sourceIdField + " = ?";
+                     "INNER JOIN " + mainTableName + " o ON d." + orderNoField + " LIKE o." + orderNoField + " + '-%' " +
+                     "WHERE o." + orderNoField + " = ?";
         
         try (Connection conn = connectionPool.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             
-            pstmt.setInt(1, sourceId);
+            pstmt.setString(1, orderNo);
             ResultSet rs = pstmt.executeQuery();
             
             while (rs.next()) {
@@ -100,7 +102,7 @@ public class DmRemoteDao {
             }
             
         } catch (SQLException e) {
-            LogUtil.logError("查询DM订单明细失败 (sourceId=" + sourceId + "): " + e.getMessage());
+            LogUtil.logError("查询DM订单明细失败 (orderNo=" + orderNo + "): " + e.getMessage());
         }
         
         return details;
