@@ -9,8 +9,12 @@ import org.example.util.LogUtil;
 
 import java.io.InputStream;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 
 /**
  * DM数据转换服务
@@ -18,8 +22,8 @@ import java.util.*;
  */
 public class DmDataTransformService {
     private static DmDataTransformService instance;
-    private static final DateTimeFormatter DATETIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    // 简道云API要求的ISO 8601日期时间格式: yyyy-MM-dd'T'HH:mm:ss.SSS'Z'
+    private static final DateTimeFormatter ISO8601_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
     private final ObjectMapper mapper = new ObjectMapper();
     
     private Map<String, String> mainFieldMapping;
@@ -120,18 +124,22 @@ public class DmDataTransformService {
         putField(converted, "approver", order.getApprover());
         
         if (order.getSubmitTime() != null) {
-            putField(converted, "submit_time", order.getSubmitTime().format(DATETIME_FORMATTER));
+            putField(converted, "submit_time", formatDateTime(order.getSubmitTime()));
         } else {
             putField(converted, "submit_time", "");
         }
-        
-        putField(converted, "modify_time", order.getModifyTime().format(DATETIME_FORMATTER));
+
+        if (order.getModifyTime() != null) {
+            putField(converted, "modify_time", formatDateTime(order.getModifyTime()));
+        } else {
+            putField(converted, "modify_time", "");
+        }
         putField(converted, "order_status", String.valueOf(order.getOrderStatus()));
         
         putField(converted, "i_ord", order.getIOrd());
         
         if (order.getFillDate() != null) {
-            putField(converted, "fill_date", order.getFillDate().format(DATE_FORMATTER));
+            putField(converted, "fill_date", formatDateTime(order.getFillDate()));
         } else {
             putField(converted, "fill_date", "");
         }
@@ -140,13 +148,13 @@ public class DmDataTransformService {
         putField(converted, "responsible_department", order.getResponsibleDepartment());
         
         if (order.getCurrentPaymentDate() != null) {
-            putField(converted, "current_payment_date", order.getCurrentPaymentDate().format(DATE_FORMATTER));
+            putField(converted, "current_payment_date", formatDateTime(order.getCurrentPaymentDate()));
         } else {
             putField(converted, "current_payment_date", "");
         }
-        
+
         if (order.getOriginalPaymentDate() != null) {
-            putField(converted, "original_payment_date", order.getOriginalPaymentDate().format(DATE_FORMATTER));
+            putField(converted, "original_payment_date", formatDateTime(order.getOriginalPaymentDate()));
         } else {
             putField(converted, "original_payment_date", "");
         }
@@ -214,5 +222,21 @@ public class DmDataTransformService {
             String strValue = (value != null) ? value.toString().trim() : "";
             detailMap.put(widgetId, Collections.singletonMap("value", strValue));
         }
+    }
+
+    /**
+     * 格式化日期时间字段
+     * 转换为简道云API要求的ISO 8601格式: yyyy-MM-dd'T'HH:mm:ss.SSS'Z'
+     * 注意：数据库中的时间是北京时间(UTC+8)，需要转换为UTC时间戳
+     */
+    private String formatDateTime(LocalDateTime dateTime) {
+        if (dateTime == null) {
+            return "";
+        }
+        // 将北京时间(UTC+8)转换为UTC时间，然后格式化为ISO 8601格式
+        // 简道云API要求的时间格式: 2018-01-01T10:10:10.000Z
+        ZonedDateTime beijingTime = dateTime.atZone(ZoneId.of("Asia/Shanghai"));
+        ZonedDateTime utcTime = beijingTime.withZoneSameInstant(ZoneOffset.UTC);
+        return utcTime.format(ISO8601_FORMATTER);
     }
 }

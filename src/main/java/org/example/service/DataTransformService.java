@@ -409,7 +409,6 @@ public class DataTransformService {
         String factoryProdInst = getStringValue(record.get("factory_product_instructions"));
         String customWorkRemark = getStringValue(record.get("cutomized_work_remark"));
         String prodRequirements = getStringValue(record.get("production_requirements"));
-        String prodInfo = getStringValue(record.get("product_infomation"));
 
         // 存储要合并的内容
         StringBuilder result = new StringBuilder();
@@ -436,15 +435,6 @@ public class DataTransformService {
                 if (result.length() > 0)
                     result.append("#");
                 result.append(prodRequirements);
-            }
-        }
-
-        // 添加product_infomation
-        if (!prodInfo.isEmpty()) {
-            if (!factoryProdInst.contains(prodInfo)) {
-                if (result.length() > 0)
-                    result.append("#");
-                result.append(prodInfo);
             }
         }
 

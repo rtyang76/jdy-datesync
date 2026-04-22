@@ -189,7 +189,7 @@ public class DmJdySyncService {
 
         while (retryCount < MAX_RETRY && !batchSuccess) {
             try {
-                batchSuccess = apiService.createData(APP_ID, ENTRY_ID, dataList, false);
+                batchSuccess = apiService.createData(APP_ID, ENTRY_ID, dataList, true);
 
                 if (batchSuccess) {
                     // 批量创建成功，更新所有订单的同步状态

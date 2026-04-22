@@ -100,23 +100,26 @@ graph TB
 
 ### 2. DM数据同步模块
 
-#### DM数据拉取 (`DmDataPullService`)
-- **数据源**: 客户DM数据库（虚拟机）
-- **目标**: 本地数据库 `dm_order` 表
-- **特色功能**:
-  - 增量同步（基于 `modify_time` 字段）
-  - 双数据库连接池管理
-  - 状态标记机制（C=创建，U=更新）
-  - 批量数据拉取
+#### 数据来源说明
+**注意**: DM数据同步模块**不直接从客户DM数据库拉取数据**。
+
+实际的DM数据流程为：
+1. 客户服务器部署的推送服务 → 推送DM工单数据到本地数据库
+2. 本项目服务从本地SQL Server数据库 `dm_order` 表读取数据
+3. DmJdySyncService 将数据推送至简道云
+
+因此，**DM和OMS的数据源都是本地SQL Server数据库**，只是表不同：
+- MSD数据：`oms_order`（订单）、`oms_job_item_info`（物料）等
+- DM数据：`dm_order`（工单）、`dm_order_detail`（工单明细）等
 
 #### DM数据推送 (`DmJdySyncService`)
-- **数据源**: 本地数据库 `dm_order` 表
+- **数据源**: 本地SQL Server数据库 `dm_order` 表
 - **目标表单**: 简道云DM订单表单
 - **特色功能**:
-  - 智能操作判断（无需查询简道云）
-  - ID缓存机制（`jdy_data_id`字段）
-  - 批量处理优化
-  - 错误重试和状态跟踪
+  - 主子表完整推送（含 `dm_order_detail` 子表数据）
+  - 通过 `order_no` 查询简道云判断新建或更新
+  - 增量同步（基于 `sync_status` 字段）
+  - 错误重试和状态跟踪（最多重试10次）
 
 ## 核心配置
 

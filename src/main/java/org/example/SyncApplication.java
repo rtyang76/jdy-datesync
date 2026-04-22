@@ -10,7 +10,9 @@ import org.example.dm.service.DmJdySyncService;
 import org.example.util.LogUtil;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.TimeZone;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -22,12 +24,17 @@ import java.util.concurrent.TimeUnit;
  */
 public class SyncApplication {
 
-    private static final int SYNC_INTERVAL_MINUTES = 5; // 定时同步间隔（分钟）
+    private static final int SYNC_INTERVAL_MINUTES = 3; // 定时同步间隔（分钟）
 
     /**
      * 主程序入口
      */
     public static void main(String[] args) {
+        // 设置JVM默认时区为北京时间（Asia/Shanghai）
+        // 这确保所有时间处理都使用北京时间，避免时区转换问题
+        TimeZone.setDefault(TimeZone.getTimeZone("Asia/Shanghai"));
+        System.out.println("JVM时区已设置为: " + TimeZone.getDefault().getID());
+
         System.out.println("\n==================================================");
         System.out.println("数据同步程序启动");
         System.out.println("==================================================\n");

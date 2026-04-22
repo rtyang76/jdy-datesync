@@ -442,8 +442,11 @@ public class DmLocalDao {
                 if (submitTime != null) {
                     order.setSubmitTime(submitTime.toLocalDateTime());
                 }
-                
-                order.setModifyTime(rs.getTimestamp("modify_time").toLocalDateTime());
+
+                Timestamp modifyTime = rs.getTimestamp("modify_time");
+                if (modifyTime != null) {
+                    order.setModifyTime(modifyTime.toLocalDateTime());
+                }
                 order.setOrderStatus(rs.getInt("order_status"));
                 order.setSyncStatus(rs.getInt("sync_status"));
                 order.setSyncAttempts(rs.getInt("sync_attempts"));
